@@ -67,7 +67,7 @@ ARMV7M_GCCFLAGS += -ffunction-sections -fdata-sections -fno-exceptions -fno-dele
 ARMV7M_GPPFLAGS := $(ARMV7M_GCCFLAGS) -fno-rtti
 ARMV7M_GCCFLAGS += -std=gnu99
 ARMV7M_ASFLAGS  := -mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=softfp -mthumb -g3 -x assembler-with-cpp -MMD -MP
-ARMV7M_LDFLAGS  := -mcpu=cortex-m3 -mthumb -specs=../gcc4mbed/build/startfile.spec -specs=../gcc4mbed/build/nano.specs
+ARMV7M_LDFLAGS  := -mcpu=cortex-m3 -mthumb -specs=startfile.spec -specs=nano.specs
 ARMV7M_LDFLAGS  += -Wl,--cref,--gc-sections
 
 # Flags to use when compiling binaries to run on this host system.
