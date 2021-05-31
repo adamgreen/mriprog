@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016  Adam Green (https://github.com/adamgreen)
+/*  Copyright (C) 2021  Adam Green (https://github.com/adamgreen)
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -81,7 +81,7 @@ static void readPacketHeader(PacketHeader* pHeader);
 static void waitForStartOfPacket(void);
 static void readBytesFromComm(void* pvBuffer, size_t bufferSize);
 static void sendAckPacket(void);
-static void sendNakPacket(uint32_t errorCode);
+static void sendNakPacket(int32_t errorCode);
 static void waitForUartToFlush(void);
 static uint32_t targetUartHasFlushed(void);
 static int iapEraseAll(void);
@@ -92,12 +92,10 @@ static uint32_t iapSectorFromAddress(uint32_t flashAddress);
 static int iapCopyRamToFlash(uint32_t flashAddress, uint8_t* pRam, uint32_t length);
 
 
-int main(void)
+int realMain(void)
 {
     PacketHeader header;
     uint8_t*     pData = (uint8_t*)0x10000000;
-
-    __disable_irq();
 
     zeroFillBssSection();
     crcTableInit();
@@ -137,7 +135,7 @@ int main(void)
             NVIC_SystemReset();
             break;
         default:
-            sendNakPacket(0xFFFFFFFF);
+            sendNakPacket(-1);
         }
     }
 
@@ -302,7 +300,7 @@ static void sendAckPacket(void)
     sendPacketHeader(&header);
 }
 
-static void sendNakPacket(uint32_t errorCode)
+static void sendNakPacket(int32_t errorCode)
 {
     PacketHeader header;
 

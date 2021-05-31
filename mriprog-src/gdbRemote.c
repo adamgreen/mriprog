@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015  Adam Green (https://github.com/adamgreen)
+/*  Copyright (C) 2021  Adam Green (https://github.com/adamgreen)
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -99,7 +99,7 @@ void gdbRemoteUninit(void)
 void gdbRemoteGetRegisters(ArmContext* pContext)
 {
     sendGetRegistersCommand();
-    receiveAndParseByteArrayResponse((uint8_t*)&pContext->R[0], 17 * sizeof(uint32_t));
+    receiveAndParseByteArrayResponse((uint8_t*)pContext, sizeof(*pContext));
 }
 
 static void sendGetRegistersCommand(void)
@@ -142,7 +142,7 @@ static void sendSetRegisterCommand(const ArmContext* pContext)
 
     bufferInit(&buffer, g_pPacketData, g_maximumPacketSize);
     bufferWriteChar(&buffer, 'G');
-    sendByteArrayAsHex(&buffer, (uint8_t*)&pContext->R[0], 17 * sizeof(uint32_t));
+    sendByteArrayAsHex(&buffer, (uint8_t*)pContext, sizeof(*pContext));
     bufferSetEndOfBuffer(&buffer);
     packetSend(&packet, &buffer);
 }

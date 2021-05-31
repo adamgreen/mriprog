@@ -1,4 +1,4 @@
-/*  Copyright (C) 2015  Adam Green (https://github.com/adamgreen)
+/*  Copyright (C) 2021  Adam Green (https://github.com/adamgreen)
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -42,6 +42,12 @@ typedef struct ArmContext
     uint32_t lr;
     uint32_t pc;
     uint32_t xPSR;
+    uint32_t msp;
+    uint32_t psp;
+    uint32_t primask;
+    uint32_t basepri;
+    uint32_t faultmask;
+    uint32_t control;
 } ArmContext;
 
          void gdbRemoteInit(IComm* pComm);

@@ -92,7 +92,7 @@ DEPS :=
 objs = $(addprefix $2/,$(addsuffix .o,$(basename $(wildcard $1/*.c $1/*.cpp $1/*.S))))
 armv7m_objs = $(call objs,$1,$(ARMV7M_OBJDIR))
 host_objs = $(call objs,$1,$(HOST_OBJDIR))
-add_deps = $(patsubst %.o,%.d,$(HOST_$1_OBJ) $(GCOV_HOST_$1_OBJ))
+add_deps = $(patsubst %.o,%.d,$(HOST_$1_OBJ) $(ARMV7M_$1_OBJ) $(GCOV_HOST_$1_OBJ))
 includes = $(patsubst %,-I%,$1)
 define link_exe
 	@echo Building $@
@@ -169,6 +169,11 @@ $(ARMV7M_OBJDIR)/%.o : %.c
 	@echo Compiling $<
 	$Q $(MAKEDIR)
 	$Q $(ARMV7M_GCC) $(ARMV7M_GCCFLAGS) $(call includes,$(INCLUDES)) -c $< -o $@
+
+$(ARMV7M_OBJDIR)/%.o : %.S
+	@echo Assembling $<
+	$Q $(MAKEDIR)
+	$Q $(ARMV7M_GCC) $(ARMV7M_ASFLAGS) $(call includes,$(INCLUDES)) -c $< -o $@
 
 $(HOST_OBJDIR)/%.o : %.c
 	@echo Compiling $<

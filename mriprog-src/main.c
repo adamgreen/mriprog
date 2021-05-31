@@ -1,4 +1,4 @@
-/*  Copyright (C) 2016  Adam Green (https://github.com/adamgreen)
+/*  Copyright (C) 2021  Adam Green (https://github.com/adamgreen)
 
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@
 #include "ElfLoad.h"
 #include "gdbRemote.h"
 #include "packet.h"
+#include "lpc1768.h"
 #include "SerialIComm.h"
 #include "SocketIComm.h"
 #include "boot-lpc1768.h"
@@ -38,11 +39,6 @@ static void displayUsage(void)
                     "       image.elf is the pathname of the new firmware to\n"
                     "                 load into FLASH.\n");
 }
-
-/* Locations in RAM where LPC1768 serial bootloader should be loaded to not interfere with MRI. */
-#define LPC1768_RAM_START 0x2007c000
-#define LPC1768_RAM_SIZE  (32 * 1024)
-#define LPC1768_RAM_END   (LPC1768_RAM_START + LPC1768_RAM_SIZE)
 
 #define COMMAND_LINE_FLAGS_ERASE_ALL (1 << 0)
 
@@ -105,7 +101,7 @@ int main(int argc, const char** argv)
         if (cmdLine.pDeviceName == strstr(cmdLine.pDeviceName, "/dev/tty"))
             pComm = SerialIComm_Init(cmdLine.pDeviceName, 230400, 2000);
         else
-            pComm = SocketIComm_Init(cmdLine.pDeviceName, 10000);
+            pComm = SocketIComm_Init(cmdLine.pDeviceName, 30000);
 
         printf("Loading new flash image %s...\n", cmdLine.pFlashImagePath);
         image = openBinaryFile(cmdLine.pFlashImagePath);
@@ -324,7 +320,7 @@ static void readPacketHeader(IComm* pComm, PacketHeader* pHeader)
 
     if (pHeader->type == PACKET_TYPE_NAK)
     {
-        fprintf(stderr, "error: Device returned NAK with error %u.\n", pHeader->errorCode);
+        fprintf(stderr, "error: Device returned NAK with error %d.\n", pHeader->errorCode);
         return;
     }
 

@@ -38,7 +38,7 @@ typedef struct PacketHeader
     uint32_t length;
     union {
         uint32_t address;
-        uint32_t errorCode;
+        int32_t  errorCode;
     };
 } PacketHeader;
 

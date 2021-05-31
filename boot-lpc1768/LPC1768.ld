@@ -11,7 +11,7 @@ MEMORY
  * with other linker script that defines memory regions FLASH and RAM.
  * It references following symbols, which must be defined in code:
  *   Reset_Handler : Entry of reset handler
- * 
+ *
  * It defines following symbols, which code can use without definition:
  *   __exidx_start
  *   __exidx_end
@@ -39,7 +39,7 @@ SECTIONS
 {
     .text :
     {
-        KEEP(*(.text.startup.main))
+        KEEP(*(text.main))
         *(.text*)
 
         *(.init)
@@ -64,7 +64,7 @@ SECTIONS
         *(.eh_frame*)
     } > RAM
 
-    .ARM.extab : 
+    .ARM.extab :
     {
         *(.ARM.extab* .gnu.linkonce.armextab.*)
     } > RAM
@@ -77,7 +77,7 @@ SECTIONS
     __exidx_end = .;
 
     __etext = .;
-        
+
     .data : AT (__etext)
     {
         __data_start__ = .;
@@ -112,7 +112,7 @@ SECTIONS
 
     } > RAM
 
-    
+
     .bss :
     {
         __bss_start__ = .;
@@ -122,7 +122,7 @@ SECTIONS
         Image$$RW_IRAM1$$ZI$$Limit = . ;
     } > RAM
 
-    
+
     .heap :
     {
         __end__ = .;
@@ -144,7 +144,7 @@ SECTIONS
     __StackTop = ORIGIN(RAM) + LENGTH(RAM);
     __StackLimit = __StackTop - SIZEOF(.stack_dummy);
     PROVIDE(__stack = __StackTop);
-    
+
     /* Check if data + heap + stack exceeds RAM limit */
     ASSERT(__StackLimit >= __HeapLimit, "region RAM overflowed with stack")
 }
