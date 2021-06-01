@@ -20,7 +20,7 @@
 #define PACKET_START_MARKER "aDaM"
 
 /* Maximum number of bytes in packet data. */
-#define PACKET_MAX_DATA (16 * 1024)
+#define PACKET_MAX_DATA (4 * 1024)
 
 /* Packet types that can be found in PacketHeader::type */
 #define PACKET_TYPE_INIT_COMPLETED 0xFFFF0000

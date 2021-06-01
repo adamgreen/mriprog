@@ -56,6 +56,7 @@ typedef struct BinaryFile
 } BinaryFile;
 
 static const uint8_t g_startOfPacket[4] = PACKET_START_MARKER;
+static uint32_t      g_retryCount = 0;
 
 
 static int parseCommandLine(CommandLine* pCommandLine, int argc, const char** argv);
@@ -101,7 +102,7 @@ int main(int argc, const char** argv)
         if (cmdLine.pDeviceName == strstr(cmdLine.pDeviceName, "/dev/tty"))
             pComm = SerialIComm_Init(cmdLine.pDeviceName, 230400, 2000);
         else
-            pComm = SocketIComm_Init(cmdLine.pDeviceName, 30000);
+            pComm = SocketIComm_Init(cmdLine.pDeviceName, 10000);
 
         printf("Loading new flash image %s...\n", cmdLine.pFlashImagePath);
         image = openBinaryFile(cmdLine.pFlashImagePath);
@@ -154,7 +155,10 @@ int main(int argc, const char** argv)
             }
         }
         endFlashTime = getTimeInMicroseconds();
-        printf("    Wrote %u bytes in %u microseconds\n", bytesWritten, endFlashTime - startFlashTime);
+        printf("    Wrote %u bytes in %u microseconds with %u packet retries\n",
+               bytesWritten,
+               endFlashTime - startFlashTime,
+               g_retryCount);
         printf("    %.3f kB / second\n", (bytesWritten / 1024.0f) / ((endFlashTime - startFlashTime) / 1000000.0f));
 
         printf("Resetting device...\n");
@@ -320,7 +324,6 @@ static void readPacketHeader(IComm* pComm, PacketHeader* pHeader)
 
     if (pHeader->type == PACKET_TYPE_NAK)
     {
-        fprintf(stderr, "error: Device returned NAK with error %d.\n", pHeader->errorCode);
         return;
     }
 
@@ -369,7 +372,7 @@ static void sendPacket(IComm* pComm, PacketHeader* pHeader, const void* pvData)
     do
     {
         if (attempt > 0)
-            fprintf(stderr, "error: Retrying packet send.\n");
+            g_retryCount++;
 
         IComm_SendBytes(pComm, g_startOfPacket, sizeof(g_startOfPacket));
         IComm_SendBytes(pComm, pHeader, sizeof(*pHeader));
